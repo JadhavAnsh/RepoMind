@@ -46,7 +46,7 @@ async function bootstrap() {
   // OpenAPI / Swagger documentation
   setupOpenApi(app);
 
-  const port = process.env.PORT ?? 3001;
+  const port = process.env.PORT ?? 4000;
   await app.listen(port);
 
   logger.log(`API server running on http://localhost:${port}`);

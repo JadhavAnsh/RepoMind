@@ -1,0 +1,13 @@
+// Prisma schema stub (ANS-70).
+//
+// The database is PostgreSQL with the pgvector extension (`CREATE EXTENSION vector`).
+// Models, relations and migrations land in the Day 2 ticket.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url = env("DATABASE_URL")
+}

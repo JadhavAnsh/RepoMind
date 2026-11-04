@@ -19,16 +19,23 @@ export class HealthController {
 
   @Public()
   @Get('health')
-  @ApiOperation({ summary: 'Liveness check', description: 'Returns system health status.' })
-  @ApiResponse({ status: 200, description: 'Liveness status' })
+  @ApiOperation({
+    summary: 'Health check',
+    description:
+      'Reports API status plus real db and retrieval connectivity checks.',
+  })
+  @ApiResponse({ status: 200, description: 'Health report' })
   checkHealth() {
     return this.healthService.getLiveness();
   }
 
   @Public()
   @Get('ready')
-  @ApiOperation({ summary: 'Readiness check', description: 'Returns dependency and worker readiness.' })
-  @ApiResponse({ status: 200, description: 'Readiness status' })
+  @ApiOperation({
+    summary: 'Readiness check',
+    description: 'Runs the same real db and retrieval checks as /health.',
+  })
+  @ApiResponse({ status: 200, description: 'Readiness report' })
   checkReady() {
     return this.healthService.getReadiness();
   }
