@@ -123,7 +123,11 @@ const SERVICE_ROWS = [
 ] as const
 
 export default async function Page() {
-  const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000"
+  // API_INTERNAL_URL is read at runtime (server only); NEXT_PUBLIC_* is inlined at build time.
+  const apiUrl =
+    process.env["API_INTERNAL_URL"] ||
+    process.env.NEXT_PUBLIC_API_URL ||
+    "http://localhost:4000"
   const health = await fetchHealth(apiUrl)
 
   return (
