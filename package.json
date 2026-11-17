@@ -6,10 +6,12 @@
     "dev:api": "pnpm --filter api dev",
     "build:web": "pnpm --filter web build",
     "build:api": "pnpm --filter api build",
+    "build:contracts": "pnpm --filter @repomind/contracts build",
     "lint:web": "pnpm --filter web lint",
     "lint:api": "pnpm --filter api lint",
     "typecheck:web": "pnpm --filter web typecheck",
     "typecheck:api": "pnpm --filter api typecheck",
+    "typecheck:contracts": "pnpm --filter @repomind/contracts typecheck",
     "test:api": "pnpm --filter api test",
     "docker:up": "docker compose -f infra/docker/docker-compose.yml up --build",
     "docker:down": "docker compose -f infra/docker/docker-compose.yml down"

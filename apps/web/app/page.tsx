@@ -7,68 +7,23 @@ import {
   CardTitle,
 } from "@/components/ui/card"
 import { cn } from "@/lib/utils"
+import {
+  HealthResponseEnvelope,
+  type HealthReport,
+  type ServiceStatus,
+} from "@repomind/contracts"
 
 export const dynamic = "force-dynamic"
 
-type ServiceStatus = "ok" | "unreachable" | "not_configured"
-
-interface HealthData {
-  status: "ok" | "degraded"
-  version: string
-  timestamp: string
-  services: {
-    api: ServiceStatus
-    db: ServiceStatus
-    retrieval: ServiceStatus
-  }
-}
-
-const SERVICE_STATUSES: readonly string[] = ["ok", "unreachable", "not_configured"]
-
-function isRecord(value: unknown): value is Record<string, unknown> {
-  return typeof value === "object" && value !== null
-}
-
-function isServiceStatus(value: unknown): value is ServiceStatus {
-  return typeof value === "string" && SERVICE_STATUSES.includes(value)
-}
-
-function parseHealth(body: unknown): HealthData | null {
-  if (!isRecord(body) || body.success !== true || !isRecord(body.data)) {
-    return null
-  }
-  const { status, version, timestamp, services } = body.data
-  if (
-    (status !== "ok" && status !== "degraded") ||
-    typeof version !== "string" ||
-    typeof timestamp !== "string" ||
-    !isRecord(services) ||
-    !isServiceStatus(services.api) ||
-    !isServiceStatus(services.db) ||
-    !isServiceStatus(services.retrieval)
-  ) {
-    return null
-  }
-  return {
-    status,
-    version,
-    timestamp,
-    services: {
-      api: services.api,
-      db: services.db,
-      retrieval: services.retrieval,
-    },
-  }
-}
-
-async function fetchHealth(apiUrl: string): Promise<HealthData | null> {
+async function fetchHealth(apiUrl: string): Promise<HealthReport | null> {
   try {
     const response = await fetch(`${apiUrl.replace(/\/+$/, "")}/api/v1/health`, {
       cache: "no-store",
       signal: AbortSignal.timeout(5000),
     })
     if (!response.ok) return null
-    return parseHealth(await response.json())
+    const parsed = HealthResponseEnvelope.safeParse(await response.json())
+    return parsed.success ? parsed.data.data : null
   } catch {
     return null
   }

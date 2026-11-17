@@ -2,23 +2,11 @@ import { Injectable, Logger } from '@nestjs/common';
 import { readFileSync } from 'node:fs';
 import { connect } from 'node:net';
 import { resolve } from 'node:path';
-
-export type DependencyStatus = 'ok' | 'unreachable' | 'not_configured';
-
-export interface HealthReport {
-  status: 'ok' | 'degraded';
-  version: string;
-  timestamp: string;
-  services: {
-    api: 'ok';
-    db: DependencyStatus;
-    retrieval: DependencyStatus;
-  };
-}
-
-export interface ReadinessReport extends HealthReport {
-  ready: boolean;
-}
+import type {
+  DependencyStatus,
+  HealthReport,
+  ReadinessReport,
+} from '@repomind/contracts';
 
 export const HEALTH_CHECK_TIMEOUT_MS = 1500;
 
