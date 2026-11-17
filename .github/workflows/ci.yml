@@ -1,0 +1,65 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  ts:
+    name: ts
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10.22.0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      # api and web resolve @repomind/contracts through its dist/, so build it first.
+      - name: Build contracts
+        run: pnpm --filter @repomind/contracts build
+
+      - name: Typecheck api
+        run: pnpm --filter api typecheck
+
+      - name: Typecheck web
+        run: pnpm --filter web typecheck
+
+      - name: Test api
+        run: pnpm --filter api test
+
+      - name: Build web
+        run: pnpm --filter web build
+
+  retrieval:
+    name: retrieval
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: services/retrieval
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          if [ -f requirements-dev.txt ]; then pip install -r requirements-dev.txt; fi
+
+      - name: Run tests
+        run: pytest -q
